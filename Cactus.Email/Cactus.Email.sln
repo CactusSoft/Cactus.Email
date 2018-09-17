@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.Email.Core", "Cactus.Email\Cactus.Email.Core.csproj", "{D2D35651-60E4-4F37-A4D9-87BB53429AF1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.Email.Templates.EntityFraemwork", "Cactus.Email.Templates.EntityFraemwork\Cactus.Email.Templates.EntityFraemwork.csproj", "{1D402010-B907-4A52-8094-4F3EDD278986}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{DA527CCC-3B8A-4B50-ADD8-E99A11929CAA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.Email.Simple", "Example\Cactus.Email.Simple\Cactus.Email.Simple.csproj", "{A351798B-9867-4612-B492-A4431A95B663}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.Email.Smtp", "Cactus.Email.Smtp\Cactus.Email.Smtp.csproj", "{6390C2CD-F04D-428F-801C-FBBC10372783}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.Email.Templates.Razor", "Cactus.Email.Templates.Razor\Cactus.Email.Templates.Razor.csproj", "{A2F8E6B8-5928-4B8C-B518-FF311B0E7EEA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{780B3FA6-8D3A-4503-AD4B-6490F50C387C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cactus.Email.Smtp.Tests", "Tests\Cactus.Email.Smtp.Tests\Cactus.Email.Smtp.Tests.csproj", "{7B06ACCF-D33B-4DA2-81DD-19A186416DB9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2D35651-60E4-4F37-A4D9-87BB53429AF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D35651-60E4-4F37-A4D9-87BB53429AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2D35651-60E4-4F37-A4D9-87BB53429AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2D35651-60E4-4F37-A4D9-87BB53429AF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D402010-B907-4A52-8094-4F3EDD278986}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D402010-B907-4A52-8094-4F3EDD278986}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D402010-B907-4A52-8094-4F3EDD278986}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D402010-B907-4A52-8094-4F3EDD278986}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A351798B-9867-4612-B492-A4431A95B663}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A351798B-9867-4612-B492-A4431A95B663}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A351798B-9867-4612-B492-A4431A95B663}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A351798B-9867-4612-B492-A4431A95B663}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6390C2CD-F04D-428F-801C-FBBC10372783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6390C2CD-F04D-428F-801C-FBBC10372783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6390C2CD-F04D-428F-801C-FBBC10372783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6390C2CD-F04D-428F-801C-FBBC10372783}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2F8E6B8-5928-4B8C-B518-FF311B0E7EEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2F8E6B8-5928-4B8C-B518-FF311B0E7EEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2F8E6B8-5928-4B8C-B518-FF311B0E7EEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2F8E6B8-5928-4B8C-B518-FF311B0E7EEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B06ACCF-D33B-4DA2-81DD-19A186416DB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B06ACCF-D33B-4DA2-81DD-19A186416DB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B06ACCF-D33B-4DA2-81DD-19A186416DB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B06ACCF-D33B-4DA2-81DD-19A186416DB9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A351798B-9867-4612-B492-A4431A95B663} = {DA527CCC-3B8A-4B50-ADD8-E99A11929CAA}
+		{7B06ACCF-D33B-4DA2-81DD-19A186416DB9} = {780B3FA6-8D3A-4503-AD4B-6490F50C387C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {848FF377-7B8D-49A5-992C-45B36FCD5B74}
+	EndGlobalSection
+EndGlobal
