@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Cactus.Email.Core.Repositories;
 using Cactus.Email.Templates.EntityFraemwork.Database;

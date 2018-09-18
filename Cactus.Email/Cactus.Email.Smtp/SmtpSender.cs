@@ -20,45 +20,13 @@ namespace Cactus.Email.Smtp
         public SmtpSender(ISmtpConfiguration smtpConfiguration)
         {
             _smtpConfiguration = smtpConfiguration;
-        }
+        }        
 
         public async Task Send(string fromEmail, IEnumerable<string> recipients, IWebPageInfo webPageInfo, string displayName = null)
         {
             try
             {
-                var collectionRecipients = recipients.ToList();
-
-                var message = new MailMessage
-                {
-                    From = string.IsNullOrEmpty(displayName) ? new MailAddress(fromEmail) : new MailAddress(fromEmail, displayName),
-                    Subject = webPageInfo.Subject,
-                    Body = webPageInfo.Body,
-                    IsBodyHtml = webPageInfo.IsBodyHtml
-                };
-
-                if (webPageInfo.HtmlBodyEncoding != null)
-                {
-                    message.BodyEncoding = CastToEncoding(webPageInfo.HtmlBodyEncoding.Value);
-                }
-
-                if (!string.IsNullOrEmpty(webPageInfo.PlainBody))
-                {
-                    if (webPageInfo.PlainBodyEncoding != null)
-                    {
-                        message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(webPageInfo.PlainBody,
-                            CastToEncoding(webPageInfo.PlainBodyEncoding.Value), "text/plain"));
-                    }
-                    else
-                    {
-                        message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(webPageInfo.PlainBody,
-                            new ContentType { MediaType = "text/plain" }));
-                    }
-                }
-
-                foreach (var recipient in collectionRecipients.Distinct())
-                {
-                    message.To.Add(recipient);
-                }
+                var message = GenerateMessage(fromEmail, recipients, webPageInfo, displayName);
 
                 using (var smtpClient = GetNewSmtpClient())
                 {
@@ -78,6 +46,45 @@ namespace Cactus.Email.Smtp
             await Send(fromEmail, new[] { recipient }, template);
         }
 
+        private MailMessage GenerateMessage(string fromEmail, IEnumerable<string> recipients, IWebPageInfo webPageInfo, string displayName = null)
+        {
+            var collectionRecipients = recipients.ToList();
+
+            var message = new MailMessage
+            {
+                From = string.IsNullOrEmpty(displayName) ? new MailAddress(fromEmail) : new MailAddress(fromEmail, displayName),
+                Subject = webPageInfo.Subject,
+                Body = webPageInfo.Body,
+                IsBodyHtml = webPageInfo.IsBodyHtml
+            };
+
+            if (webPageInfo.HtmlBodyEncoding != null)
+            {
+                message.BodyEncoding = CastToEncoding(webPageInfo.HtmlBodyEncoding.Value);
+            }
+
+            if (!string.IsNullOrEmpty(webPageInfo.PlainBody))
+            {
+                if (webPageInfo.PlainBodyEncoding != null)
+                {
+                    message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(webPageInfo.PlainBody,
+                        CastToEncoding(webPageInfo.PlainBodyEncoding.Value), "text/plain"));
+                }
+                else
+                {
+                    message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(webPageInfo.PlainBody,
+                        new ContentType { MediaType = "text/plain" }));
+                }
+            }
+
+            foreach (var recipient in collectionRecipients.Distinct())
+            {
+                message.To.Add(recipient);
+            }
+
+            return message;
+        }
+
         private SmtpClient GetNewSmtpClient()
         {
             var smtpClient = new SmtpClient
@@ -90,7 +97,7 @@ namespace Cactus.Email.Smtp
             if (_smtpConfiguration.SmtpServerPort != null) smtpClient.Port = _smtpConfiguration.SmtpServerPort.Value;
             if (_smtpConfiguration.EnableSsl != null) smtpClient.EnableSsl = _smtpConfiguration.EnableSsl.Value;
             if (_smtpConfiguration.SmtpServerTimeout != null) smtpClient.Timeout = _smtpConfiguration.SmtpServerTimeout.Value;
-
+            
             return smtpClient;
         }
 
