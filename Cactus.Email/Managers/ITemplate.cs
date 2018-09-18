@@ -1,11 +1,10 @@
-﻿using System;
-using Cactus.Email.Core.Senders;
+﻿using Cactus.Email.Core.Senders;
 
-namespace Cactus.Email.Core.Repositories
+namespace Cactus.Email.Core.Managers
 {
-    public interface ITemplate
+    public interface ITemplate<TKey>
     {
-        Guid Id { get; set; }
+        TKey Id { get; set; }
 
         string Name { get; set; }
 
@@ -22,7 +21,5 @@ namespace Cactus.Email.Core.Repositories
         EncodingType? HtmlBodyEncoding { get; set; }
 
         EncodingType? PlainBodyEncoding { get; set; }
-
-        DateTime CreatedDateTime { get; set; }
     }
 }

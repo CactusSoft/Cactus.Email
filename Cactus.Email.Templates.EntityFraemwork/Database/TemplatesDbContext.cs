@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Cactus.Email.Templates.EntityFraemwork.Managers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cactus.Email.Templates.EntityFraemwork.Database
 {

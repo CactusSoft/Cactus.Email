@@ -1,10 +1,10 @@
 ﻿using System;
-using Cactus.Email.Core.Repositories;
+using Cactus.Email.Core.Managers;
 using Cactus.Email.Core.Senders;
 
-namespace Cactus.Email.Templates.EntityFraemwork
+namespace Cactus.Email.Templates.EntityFraemwork.Managers
 {
-    public class Template : ITemplate
+    public class Template : ITemplate<Guid>
     {
         public Guid Id { get; set; }
 

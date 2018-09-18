@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Cactus.Email.Core.Repositories;
 using Cactus.Email.Templates.EntityFraemwork.Database;
-using Newtonsoft.Json.Linq;
+using Cactus.Email.Templates.EntityFraemwork.Managers;
 
 namespace Cactus.Email.Templates.EntityFraemwork.Repositories
 {
@@ -15,26 +14,26 @@ namespace Cactus.Email.Templates.EntityFraemwork.Repositories
             _context = context;
         }
 
-        public IQueryable<ITemplate> GetQuerable()
+        public IQueryable<Template> GetQuerable()
         {
             return _context.Set<Template>();
         }
 
-        public async Task CreateAsync(ITemplate entity)
+        public async Task CreateAsync(Template entity)
         {
-            await _context.Set<Template>().AddAsync((Template)entity);
+            await _context.Set<Template>().AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task PatchAsync(ITemplate entity, JObject patch)
+        public async Task UpdateAsync(Template entity)
         {
-            _context.Patch(patch, (Template)entity);
+            _context.Templates.Update(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveAsync(ITemplate entity)
+        public async Task RemoveAsync(Template entity)
         {
-            _context.Remove((Template)entity);
+            _context.Remove(entity);
             await _context.SaveChangesAsync();
         }
     }

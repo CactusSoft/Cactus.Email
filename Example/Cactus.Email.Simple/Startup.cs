@@ -6,6 +6,7 @@ using Cactus.Email.Simple.Services;
 using Cactus.Email.Smtp;
 using Cactus.Email.Smtp.Configurations;
 using Cactus.Email.Templates.EntityFraemwork.Database;
+using Cactus.Email.Templates.EntityFraemwork.Managers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,13 +29,13 @@ namespace Cactus.Email.Simple
             var containerBuilder = new ContainerBuilder();
 
             containerBuilder.RegisterType<TemplatesRepository>().AsImplementedInterfaces();
+            containerBuilder.RegisterType<TemplatesManager>().AsImplementedInterfaces();
             containerBuilder.RegisterType<SubjectTemplateParser>().AsImplementedInterfaces();
             containerBuilder.RegisterType<TemplatesService>().AsImplementedInterfaces();
             containerBuilder.RegisterType<RazorTemplateRenderer>().AsImplementedInterfaces();
             containerBuilder.RegisterType<EmailSender>().AsImplementedInterfaces();
 
-
-            containerBuilder.Register(x => new SmtpSender(new SmtpConfiguration("smtp.gmail.com", 587, "sometestemail@gmail.com", "1234", null, true))).AsImplementedInterfaces();
+            containerBuilder.Register(x => new SmtpSender(new SmtpConfiguration("smtp.gmail.com", 587, "kirill.potocki@gmail.com", "PSS30004", null, true))).AsImplementedInterfaces();
 
             containerBuilder.Populate(services);
 

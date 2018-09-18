@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Cactus.Email.Core.Repositories;
 using Cactus.Email.Core.Senders;
-using Cactus.Email.Templates.EntityFraemwork;
-using Microsoft.EntityFrameworkCore;
+using Cactus.Email.Templates.EntityFraemwork.Managers;
 
 namespace Cactus.Email.Simple.Services
 {
     public class TemplatesService : ITemplatesService
     {
-        private readonly ITemplatesRepository _templatesRepository;
+        private readonly ITemplatesManager _templateManager;
 
-        public TemplatesService(ITemplatesRepository templatesRepository)
+        public TemplatesService(ITemplatesManager templateManager)
         {
-            _templatesRepository = templatesRepository;
+            _templateManager = templateManager;
         }
 
         public async Task Create(string name, string subjectTemplate, string language, string bodyTemplate, string plainBody, EncodingType? htmlEncoding,
             EncodingType? plainEncoding)
         {
-            await _templatesRepository.CreateAsync(new Template
+            var template = new Template
             {
                 Id = Guid.NewGuid(),
                 Name = name,
@@ -30,12 +28,15 @@ namespace Cactus.Email.Simple.Services
                 PlainBodyEncoding = plainEncoding,
                 Language = language,
                 CreatedDateTime = DateTime.UtcNow
-            });
+            };
+
+            await _templateManager.Create(template);
         }
 
-        public async Task<ITemplate> GetById(Guid templateId)
+        public async Task<Template> GetById(Guid templateId)
         {
-            return await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Id == templateId);
+            var template = await _templateManager.GetById(templateId);
+            return (Template) template;
         }
     }
 }
