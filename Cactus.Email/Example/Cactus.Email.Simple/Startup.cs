@@ -34,7 +34,7 @@ namespace Cactus.Email.Simple
             containerBuilder.RegisterType<EmailSender>().AsImplementedInterfaces();
 
 
-            containerBuilder.Register(x => new SmtpSender(new SmtpConfiguration("smtp.gmail.com", 587, "kirill.potocki@gmail.com", "PSS30004", null, true))).AsImplementedInterfaces();
+            containerBuilder.Register(x => new SmtpSender(new SmtpConfiguration("smtp.gmail.com", 587, "sometestemail@gmail.com", "1234", null, true))).AsImplementedInterfaces();
 
             containerBuilder.Populate(services);
 
