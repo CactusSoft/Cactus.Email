@@ -30,15 +30,11 @@ namespace Cactus.Email.Templates.EntityFraemwork.Database
 
             modelBuilder.Entity<Template>()
                 .Property(x => x.SubjectTemplate)
-                .IsRequired();
+                .IsRequired(false);
 
             modelBuilder.Entity<Template>()
-                .Property(x => x.BodyTemplate)
-                .IsRequired();
-
-            modelBuilder.Entity<Template>()
-                .Property(x => x.IsBodyHtml)
-                .IsRequired();
+                .Property(x => x.HtmlBodyTemplate)
+                .IsRequired(false);
 
             modelBuilder.Entity<Template>()
                 .Property(x => x.PlainBody)

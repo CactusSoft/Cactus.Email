@@ -1,4 +1,4 @@
-﻿using Cactus.Email.Core.Senders;
+﻿using System.Text;
 
 namespace Cactus.Email.Core.Managers
 {
@@ -10,16 +10,14 @@ namespace Cactus.Email.Core.Managers
 
         string SubjectTemplate { get; set; }
 
-        string BodyTemplate { get; set; }
-
-        bool IsBodyHtml { get; set; }
+        string HtmlBodyTemplate { get; set; }
 
         string PlainBody { get; set; }
 
         string Language { get; set; }
 
-        EncodingType? HtmlBodyEncoding { get; set; }
+        Encoding HtmlBodyEncoding { get; set; }
 
-        EncodingType? PlainBodyEncoding { get; set; }
+        Encoding PlainBodyEncoding { get; set; }
     }
 }

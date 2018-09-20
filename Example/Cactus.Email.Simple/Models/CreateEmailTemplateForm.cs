@@ -1,4 +1,4 @@
-﻿using Cactus.Email.Core.Senders;
+﻿using Cactus.Email.Templates.EntityFraemwork.Database;
 
 namespace Cactus.Email.Simple.Models
 {

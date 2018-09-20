@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Reflection;
@@ -22,7 +23,7 @@ namespace Cactus.Email.Smtp.Tests
 
             var fromEmail = "kirill.pototsky@cactussoft.biz";
             var recipients = new[] { "artem.glushov@gmail.com", "veronika.potapkina@gmail.com" };
-            var webPageInfo = new WebPageInfo("Test subject", "Hi", "Hello", false, "ru", EncodingType.UTF8, EncodingType.ASCII);
+            var webPageInfo = new EmailContentInfo("Test subject", "Hi", "Hello", "ru", Encoding.UTF8, Encoding.ASCII);
             string actualPlainText;
 
             //Expect
@@ -35,8 +36,8 @@ namespace Cactus.Email.Smtp.Tests
 
             Assert.AreEqual(fromEmail, generatedMessage.From.Address);
             Assert.AreEqual(webPageInfo.Subject, generatedMessage.Subject);
-            Assert.AreEqual(webPageInfo.Body, generatedMessage.Body);
-            Assert.AreEqual(webPageInfo.IsBodyHtml, generatedMessage.IsBodyHtml);
+            Assert.AreEqual(webPageInfo.HtmlBody, generatedMessage.Body);
+            Assert.IsTrue(generatedMessage.IsBodyHtml);
 
             Assert.AreEqual(Encoding.UTF8.EncodingName, generatedMessage.BodyEncoding.EncodingName);
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
 using Cactus.Email.Core.Senders;
 using Cactus.Email.Smtp.Configurations;
@@ -20,13 +19,13 @@ namespace Cactus.Email.Smtp
         public SmtpSender(ISmtpConfiguration smtpConfiguration)
         {
             _smtpConfiguration = smtpConfiguration;
-        }        
+        }
 
-        public async Task Send(string fromEmail, IEnumerable<string> recipients, IWebPageInfo webPageInfo, string displayName = null)
+        public async Task Send(string fromEmail, IEnumerable<string> recipients, IEmailContentInfo emailContentInfo, string displayName = null)
         {
             try
             {
-                var message = GenerateMessage(fromEmail, recipients, webPageInfo, displayName);
+                var message = GenerateMessage(fromEmail, recipients, emailContentInfo, displayName);
 
                 using (var smtpClient = GetNewSmtpClient())
                 {
@@ -41,38 +40,47 @@ namespace Cactus.Email.Smtp
             }
         }
 
-        public async Task Send(string fromEmail, string recipient, IWebPageInfo template, string displayName = null)
+        public async Task Send(string fromEmail, string recipient, IEmailContentInfo emailContentInfo, string displayName = null)
         {
-            await Send(fromEmail, new[] { recipient }, template);
+            await Send(fromEmail, new[] { recipient }, emailContentInfo, displayName);
         }
 
-        private MailMessage GenerateMessage(string fromEmail, IEnumerable<string> recipients, IWebPageInfo webPageInfo, string displayName = null)
+        private MailMessage GenerateMessage(string fromEmail, IEnumerable<string> recipients, IEmailContentInfo emailContentInfo, string displayName = null)
         {
             var collectionRecipients = recipients.ToList();
+
+            if (string.IsNullOrEmpty(emailContentInfo.HtmlBody) && string.IsNullOrEmpty(emailContentInfo.PlainBody))
+            {
+                var errorMessage = "Failed to generate email message because to need plain body or html body";
+                _logger.Error(errorMessage);
+                throw new ArgumentException(errorMessage, nameof(emailContentInfo));
+            }
 
             var message = new MailMessage
             {
                 From = string.IsNullOrEmpty(displayName) ? new MailAddress(fromEmail) : new MailAddress(fromEmail, displayName),
-                Subject = webPageInfo.Subject,
-                Body = webPageInfo.Body,
-                IsBodyHtml = webPageInfo.IsBodyHtml
+                Subject = emailContentInfo.Subject
             };
 
-            if (webPageInfo.HtmlBodyEncoding != null)
+            if (!string.IsNullOrEmpty(emailContentInfo.HtmlBody))
             {
-                message.BodyEncoding = CastToEncoding(webPageInfo.HtmlBodyEncoding.Value);
+                message.Body = emailContentInfo.HtmlBody;
+                message.IsBodyHtml = true;
+                if (emailContentInfo.HtmlBodyEncoding != null)
+                {
+                    message.BodyEncoding = emailContentInfo.HtmlBodyEncoding;
+                }
             }
 
-            if (!string.IsNullOrEmpty(webPageInfo.PlainBody))
+            if (!string.IsNullOrEmpty(emailContentInfo.PlainBody))
             {
-                if (webPageInfo.PlainBodyEncoding != null)
+                if (emailContentInfo.PlainBodyEncoding != null)
                 {
-                    message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(webPageInfo.PlainBody,
-                        CastToEncoding(webPageInfo.PlainBodyEncoding.Value), "text/plain"));
+                    message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(emailContentInfo.PlainBody, emailContentInfo.PlainBodyEncoding, "text/plain"));
                 }
                 else
                 {
-                    message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(webPageInfo.PlainBody,
+                    message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(emailContentInfo.PlainBody,
                         new ContentType { MediaType = "text/plain" }));
                 }
             }
@@ -97,26 +105,8 @@ namespace Cactus.Email.Smtp
             if (_smtpConfiguration.SmtpServerPort != null) smtpClient.Port = _smtpConfiguration.SmtpServerPort.Value;
             if (_smtpConfiguration.EnableSsl != null) smtpClient.EnableSsl = _smtpConfiguration.EnableSsl.Value;
             if (_smtpConfiguration.SmtpServerTimeout != null) smtpClient.Timeout = _smtpConfiguration.SmtpServerTimeout.Value;
-            
-            return smtpClient;
-        }
 
-        private Encoding CastToEncoding(EncodingType encodingType)
-        {
-            switch (encodingType)
-            {
-                case EncodingType.Default: return Encoding.Default;
-                case EncodingType.Unicode: return Encoding.Unicode;
-                case EncodingType.UTF8: return Encoding.UTF8;
-                case EncodingType.ASCII: return Encoding.ASCII;
-                case EncodingType.UTF7: return Encoding.UTF7;
-                case EncodingType.UTF32: return Encoding.UTF32;
-                case EncodingType.BigEndianUnicode: return Encoding.BigEndianUnicode;
-                default:
-                    var errorMessage = "Couldn't defined type of encoding";
-                    _logger.Error(errorMessage);
-                    throw new ArgumentOutOfRangeException(nameof(encodingType), errorMessage);
-            }
+            return smtpClient;
         }
     }
 }

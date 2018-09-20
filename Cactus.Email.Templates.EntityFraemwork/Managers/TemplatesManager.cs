@@ -21,19 +21,42 @@ namespace Cactus.Email.Templates.EntityFraemwork.Managers
 
         public async Task<IEnumerable<ITemplate<Guid>>> GetByLanguage(string language)
         {
-            return await _templatesRepository.GetQuerable().Where(x => x.Language == language).ToListAsync();
+            var entity = await _templatesRepository.GetQuerable().Where(x => x.Language == language).ToListAsync();
+            return entity.Select(CastToDefaultTemplate);
         }
 
         public async Task<ITemplate<Guid>> GetById(Guid id)
         {
-            return await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Id == id);
+            return CastToDefaultTemplate(entity);
         }
 
         public async Task Create(ITemplate<Guid> template)
         {
             try
             {
-                await _templatesRepository.CreateAsync((Template)template);
+                var entity = new Template
+                {
+                    Id = template.Id,
+                    Name = template.Name,
+                    SubjectTemplate = template.SubjectTemplate,
+                    HtmlBodyTemplate = template.HtmlBodyTemplate,
+                    PlainBody = template.PlainBody,
+                    Language = template.Language,
+                    CreatedDateTime = DateTime.UtcNow
+                };
+
+                if (template.HtmlBodyEncoding != null)
+                {
+                    entity.HtmlBodyEncoding = EncodingConverter.CastToEncodingType(template.HtmlBodyEncoding);
+                }
+
+                if (template.PlainBodyEncoding != null)
+                {
+                    entity.PlainBodyEncoding = EncodingConverter.CastToEncodingType(template.PlainBodyEncoding);
+                }
+
+                await _templatesRepository.CreateAsync(entity);
             }
             catch (DbUpdateException ex)
             {
@@ -55,12 +78,19 @@ namespace Cactus.Email.Templates.EntityFraemwork.Managers
                 }
                 template.Name = templateUpdates.Name;
                 template.SubjectTemplate = templateUpdates.SubjectTemplate;
-                template.BodyTemplate = templateUpdates.BodyTemplate;
-                template.IsBodyHtml = templateUpdates.IsBodyHtml;
+                template.HtmlBodyTemplate = templateUpdates.HtmlBodyTemplate;
                 template.PlainBody = templateUpdates.PlainBody;
                 template.Language = templateUpdates.Language;
-                template.HtmlBodyEncoding = templateUpdates.HtmlBodyEncoding;
-                template.PlainBodyEncoding = templateUpdates.PlainBodyEncoding;
+
+                if (template.HtmlBodyEncoding != null)
+                {
+                    template.HtmlBodyEncoding = EncodingConverter.CastToEncodingType(templateUpdates.HtmlBodyEncoding);
+                }
+
+                if (templateUpdates.PlainBodyEncoding != null)
+                {
+                    template.PlainBodyEncoding = EncodingConverter.CastToEncodingType(templateUpdates.PlainBodyEncoding);
+                }
 
                 await _templatesRepository.UpdateAsync(template);
             }
@@ -89,6 +119,21 @@ namespace Cactus.Email.Templates.EntityFraemwork.Managers
                 _logger.Error(ex, "Failed to delete template");
                 throw;
             }
+        }
+
+        private DefaultTemplate<Guid> CastToDefaultTemplate(Template template)
+        {
+            return new DefaultTemplate<Guid>
+            {
+                Id = template.Id,
+                Name = template.Name,
+                SubjectTemplate = template.SubjectTemplate,
+                HtmlBodyTemplate = template.HtmlBodyTemplate,
+                PlainBody = template.PlainBody,
+                Language = template.Language,
+                HtmlBodyEncoding = template.HtmlBodyEncoding != null ? EncodingConverter.CastToEncoding(template.HtmlBodyEncoding.Value) : null,
+                PlainBodyEncoding = template.PlainBodyEncoding != null ? EncodingConverter.CastToEncoding(template.PlainBodyEncoding.Value) : null
+            };
         }
     }
 }

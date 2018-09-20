@@ -1,10 +1,9 @@
 ﻿using System;
-using Cactus.Email.Core.Managers;
-using Cactus.Email.Core.Senders;
+using Cactus.Email.Templates.EntityFraemwork.Database;
 
 namespace Cactus.Email.Templates.EntityFraemwork.Managers
 {
-    public class Template : ITemplate<Guid>
+    public class Template
     {
         public Guid Id { get; set; }
 
@@ -12,9 +11,7 @@ namespace Cactus.Email.Templates.EntityFraemwork.Managers
 
         public string SubjectTemplate { get; set; }
 
-        public string BodyTemplate { get; set; }
-
-        public bool IsBodyHtml { get; set; }
+        public string HtmlBodyTemplate { get; set; }
 
         public string PlainBody { get; set; }
 
