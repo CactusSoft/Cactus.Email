@@ -1,12 +1,11 @@
 ﻿using System;
-using Cactus.Email.Core.Utils;
 using Cactus.Email.Templates.Razor.Logging;
 using RazorEngine;
 using RazorEngine.Templating;
 
 namespace Cactus.Email.Templates.Razor
 {
-    public class RazorTemplateRenderer : ITemplateRenderer
+    public class RazorTemplateRenderer : ITemplateRazorRenderer
     {
         private static readonly ILog Logger = LogProvider.GetLogger(typeof(RazorTemplateRenderer));
 
@@ -28,6 +27,32 @@ namespace Cactus.Email.Templates.Razor
             try
             {
                 return Engine.Razor.RunCompile(template, template);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to render of razor template");
+                throw;
+            }
+        }
+
+        public string Render<TModel>(string template, TModel model, string key)
+        {
+            try
+            {
+                return Engine.Razor.RunCompile(template, key, typeof(TModel), model);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to render of razor template");
+                throw;
+            }
+        }
+
+        public string Render(string template, string key)
+        {
+            try
+            {
+                return Engine.Razor.RunCompile(template, key);
             }
             catch (Exception ex)
             {

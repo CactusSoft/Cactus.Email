@@ -19,7 +19,7 @@ namespace Cactus.Email.Simple.Controllers
         [HttpPost("email")]
         public async Task<IActionResult> Send([FromBody]SendEmailFrom form)
         {
-            await _emailService.SendWithBodyModel(form.TemplateId, form.FromAddress, form.Recipients, new TestModel() {Name = "Kiiiiiriiiil))))"});
+            await _emailService.Send(form.TemplateId, form.FromAddress, form.Recipients);
             return NoContent();
         }
     }
