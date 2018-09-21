@@ -49,18 +49,17 @@ namespace Cactus.Email.Smtp
         {
             var collectionRecipients = recipients.ToList();
 
-            if (string.IsNullOrEmpty(emailContentInfo.HtmlBody) && string.IsNullOrEmpty(emailContentInfo.PlainBody))
-            {
-                var errorMessage = "Failed to generate email message because to need plain body or html body";
-                _logger.Error(errorMessage);
-                throw new ArgumentException(errorMessage, nameof(emailContentInfo));
-            }
+            ValidateMessageParameters(fromEmail, collectionRecipients, emailContentInfo);
 
             var message = new MailMessage
             {
-                From = string.IsNullOrEmpty(displayName) ? new MailAddress(fromEmail) : new MailAddress(fromEmail, displayName),
-                Subject = emailContentInfo.Subject
+                From = string.IsNullOrEmpty(displayName) ? new MailAddress(fromEmail) : new MailAddress(fromEmail, displayName)
             };
+
+            if (!string.IsNullOrEmpty(emailContentInfo.Subject))
+            {
+                message.Subject = emailContentInfo.Subject;
+            }
 
             if (!string.IsNullOrEmpty(emailContentInfo.HtmlBody))
             {
@@ -91,6 +90,31 @@ namespace Cactus.Email.Smtp
             }
 
             return message;
+        }
+
+        private void ValidateMessageParameters(string fromEmail, ICollection<string> recipients, IEmailContentInfo emailContentInfo)
+        {
+            string errorMessage;
+            if (string.IsNullOrEmpty(fromEmail))
+            {
+                errorMessage = "Failed to generate email message because was not set sender";
+                _logger.Error(errorMessage);
+                throw new ArgumentException(errorMessage, nameof(emailContentInfo));
+            }
+
+            if (recipients.Count <= 0 || recipients.All(string.IsNullOrEmpty))
+            {
+                errorMessage = "Failed to generate email message because was not set recepient";
+                _logger.Error(errorMessage);
+                throw new ArgumentException(errorMessage, nameof(emailContentInfo));
+            }
+
+            if (string.IsNullOrEmpty(emailContentInfo.HtmlBody) && string.IsNullOrEmpty(emailContentInfo.PlainBody))
+            {
+                errorMessage = "Failed to generate email message because to need plain body or html body";
+                _logger.Error(errorMessage);
+                throw new ArgumentException(errorMessage, nameof(emailContentInfo));
+            }
         }
 
         private SmtpClient GetNewSmtpClient()

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Net.Mail;
@@ -23,20 +23,20 @@ namespace Cactus.Email.Smtp.Tests
 
             var fromEmail = "kirill.pototsky@cactussoft.biz";
             var recipients = new[] { "artem.glushov@gmail.com", "veronika.potapkina@gmail.com" };
-            var webPageInfo = new EmailContentInfo("Test subject", "Hi", "Hello", "ru", Encoding.UTF8, Encoding.ASCII);
+            var emailContentInfo = new EmailContentInfo("Test subject", "Hi", "Hello", "ru", Encoding.UTF8, Encoding.ASCII);
             string actualPlainText;
 
             //Expect
 
             //Act
-            var generatedMessage = (MailMessage)generateMessageMethod.Invoke(smtpSender, new object[] { fromEmail, recipients, webPageInfo, "" });
+            var generatedMessage = (MailMessage)generateMessageMethod.Invoke(smtpSender, new object[] { fromEmail, recipients, emailContentInfo, "" });
 
             //Assert
             Assert.IsNotNull(generatedMessage);
 
             Assert.AreEqual(fromEmail, generatedMessage.From.Address);
-            Assert.AreEqual(webPageInfo.Subject, generatedMessage.Subject);
-            Assert.AreEqual(webPageInfo.HtmlBody, generatedMessage.Body);
+            Assert.AreEqual(emailContentInfo.Subject, generatedMessage.Subject);
+            Assert.AreEqual(emailContentInfo.HtmlBody, generatedMessage.Body);
             Assert.IsTrue(generatedMessage.IsBodyHtml);
 
             Assert.AreEqual(Encoding.UTF8.EncodingName, generatedMessage.BodyEncoding.EncodingName);
@@ -51,9 +51,32 @@ namespace Cactus.Email.Smtp.Tests
             {
                 actualPlainText = reader.ReadToEnd();
             }
-            Assert.AreEqual(webPageInfo.PlainBody, actualPlainText);
+            Assert.AreEqual(emailContentInfo.PlainBody, actualPlainText);
 
             //Verify
+        }
+
+        [Test]
+        public void GenerateMessage_NotSetHtmlAndPlainBody_Fail()
+        {
+            //Arrange
+            var smtpConfiguration = new SmtpConfiguration("server", 81, "account", "password", 1, true);
+            var smtpSender = new SmtpSender(smtpConfiguration);
+            var generateMessageMethod = smtpSender.GetType().GetMethod("GenerateMessage", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var emailContentInfo = new EmailContentInfo("Test subject", null, null, "ru", Encoding.UTF8, Encoding.ASCII);
+
+            //Expect
+
+            //Act
+            var exception = Assert.Throws<TargetInvocationException>(() => generateMessageMethod.Invoke(smtpSender, new object[] { "kirill.pototsky@cactussoft.biz", new[] { "artem@gmail.com" }, emailContentInfo , "" }));
+
+            //Assert
+            Assert.IsNotNull(exception);
+            Assert.AreEqual(exception.InnerException.GetType(), typeof(ArgumentException));
+
+            //Verify
+
         }
 
         [Test]
@@ -64,17 +87,17 @@ namespace Cactus.Email.Smtp.Tests
             var smtpSender = new SmtpSender(smtpConfiguration);
             var getNewSmtpClientMethod = smtpSender.GetType().GetMethod("GetNewSmtpClient", BindingFlags.NonPublic | BindingFlags.Instance);
             NetworkCredential actualCredentials;
-            
+
             //Expect
 
             //Act
             var smtpClient = (SmtpClient)getNewSmtpClientMethod.Invoke(smtpSender, null);
-            
+
             //Assert
             Assert.IsNotNull(smtpClient);
-            Assert.AreEqual(smtpConfiguration.SmtpServer ,smtpClient.Host);
+            Assert.AreEqual(smtpConfiguration.SmtpServer, smtpClient.Host);
             Assert.IsFalse(smtpClient.UseDefaultCredentials);
-            actualCredentials = (NetworkCredential)smtpClient.Credentials; 
+            actualCredentials = (NetworkCredential)smtpClient.Credentials;
             Assert.AreEqual(smtpConfiguration.SmtpAccount, actualCredentials.UserName);
             Assert.AreEqual(smtpConfiguration.SmtpAccountPassword, actualCredentials.Password);
 

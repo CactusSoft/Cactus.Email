@@ -10,13 +10,13 @@ namespace Cactus.Email.Core.Services
     public class DefaultEmailService<TTemplateKey> : IEmailService<TTemplateKey>
     {
         private readonly ISender _sender;
-        private readonly ITemplatesReader<TTemplateKey> _templatesService;
+        private readonly ITemplatesReader<TTemplateKey> _templatesReader;
         private readonly ITemplateRenderer _templateRenderer;
 
-        public DefaultEmailService(ISender sender, ITemplatesReader<TTemplateKey> templateService, ITemplateRenderer templateRenderer)
+        public DefaultEmailService(ISender sender, ITemplatesReader<TTemplateKey> templatesReader, ITemplateRenderer templateRenderer)
         {
             _sender = sender;
-            _templatesService = templateService;
+            _templatesReader = templatesReader;
             _templateRenderer = templateRenderer;
         }
 
@@ -24,9 +24,9 @@ namespace Cactus.Email.Core.Services
         {
             var collectionRecipients = recipients.ToList();
 
-            var template = await _templatesService.GetById(templateId);
+            var template = await _templatesReader.GetById(templateId);
             var htmlBody = !string.IsNullOrEmpty(template.HtmlBodyTemplate) ? _templateRenderer.Render(template.HtmlBodyTemplate) : null;
-            var subject = _templateRenderer.Render(template.SubjectTemplate);
+            var subject = !string.IsNullOrEmpty(template.SubjectTemplate) ? _templateRenderer.Render(template.SubjectTemplate) : null;
             var emailContentInfo = new EmailContentInfo(subject, htmlBody, template.PlainBody, template.Language, template.HtmlBodyEncoding, template.PlainBodyEncoding);
 
             await _sender.Send(from, collectionRecipients, emailContentInfo);
@@ -36,9 +36,9 @@ namespace Cactus.Email.Core.Services
         {
             var collectionRecipients = recipients.ToList();
 
-            var template = await _templatesService.GetById(templateId);
+            var template = await _templatesReader.GetById(templateId);
             var htmlBody = !string.IsNullOrEmpty(template.HtmlBodyTemplate) ? _templateRenderer.Render(template.HtmlBodyTemplate, bodyModel) : null;
-            var subject = _templateRenderer.Render(template.SubjectTemplate, subjectModel);
+            var subject = !string.IsNullOrEmpty(template.SubjectTemplate) ? _templateRenderer.Render(template.SubjectTemplate, subjectModel) : null;
             var emailContentInfo = new EmailContentInfo(subject, htmlBody, template.PlainBody, template.Language, template.HtmlBodyEncoding, template.PlainBodyEncoding);
 
             await _sender.Send(from, collectionRecipients, emailContentInfo);
@@ -48,9 +48,9 @@ namespace Cactus.Email.Core.Services
         {
             var collectionRecipients = recipients.ToList();
 
-            var template = await _templatesService.GetById(templateId);
+            var template = await _templatesReader.GetById(templateId);
             var htmlBody = !string.IsNullOrEmpty(template.HtmlBodyTemplate) ? _templateRenderer.Render(template.HtmlBodyTemplate, bodyModel) : null;
-            var subject = _templateRenderer.Render(template.SubjectTemplate);
+            var subject = !string.IsNullOrEmpty(template.SubjectTemplate) ? _templateRenderer.Render(template.SubjectTemplate) : null;
             var emailContentInfo = new EmailContentInfo(subject, htmlBody, template.PlainBody, template.Language, template.HtmlBodyEncoding, template.PlainBodyEncoding);
 
             await _sender.Send(from, collectionRecipients, emailContentInfo);
@@ -60,9 +60,9 @@ namespace Cactus.Email.Core.Services
         {
             var collectionRecipients = recipients.ToList();
 
-            var template = await _templatesService.GetById(templateId);
+            var template = await _templatesReader.GetById(templateId);
             var htmlBody = !string.IsNullOrEmpty(template.HtmlBodyTemplate) ? _templateRenderer.Render(template.HtmlBodyTemplate) : null;
-            var subject = _templateRenderer.Render(template.SubjectTemplate, subjectModel);
+            var subject = !string.IsNullOrEmpty(template.SubjectTemplate) ? _templateRenderer.Render(template.SubjectTemplate, subjectModel) : null;
             var emailContentInfo = new EmailContentInfo(subject, htmlBody, template.PlainBody, template.Language, template.HtmlBodyEncoding, template.PlainBodyEncoding);
 
             await _sender.Send(from, collectionRecipients, emailContentInfo);
