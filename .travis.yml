@@ -11,4 +11,4 @@ script:
   - dotnet test Tests/Cactus.FluentEmail.Source.Core.Tests/Cactus.FluentEmail.Source.Core.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
   - dotnet test Tests/Cactus.FluentEmail.Source.EntityFraemwork.Tests/Cactus.FluentEmail.Source.EntityFraemwork.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
   after_script:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -t 532d59ce-edd6-4d09-81b0-65ce763a36c5
