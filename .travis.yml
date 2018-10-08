@@ -1,0 +1,14 @@
+language: csharp
+mono: none
+dotnet: 2.1
+solution: Cactus.FluentEmail.Source.sln
+env:
+  global:
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 1
+script:
+  - dotnet restore
+  - dotnet build
+  - dotnet test Tests/Cactus.FluentEmail.Source.Core.Tests/Cactus.FluentEmail.Source.Core.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+  - dotnet test Tests/Cactus.FluentEmail.Source.EntityFraemwork.Tests/Cactus.FluentEmail.Source.EntityFraemwork.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+  after_script:
+  - bash <(curl -s https://codecov.io/bash)
