@@ -5,8 +5,6 @@ solution: Cactus.FluentEmail.Source.sln
 env:
   global:
     - DOTNET_CLI_TELEMETRY_OPTOUT: 1
-.tracis:
-    - token: 532d59ce-edd6-4d09-81b0-65ce763a36c5
 script:
   - dotnet restore
   - dotnet build
