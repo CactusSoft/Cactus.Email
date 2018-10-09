@@ -16,29 +16,36 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Managers
     {
         private readonly ITemplatesRepository _templatesRepository;
         private readonly ILog _logger = LogProvider.GetLogger(typeof(TemplatesManager));
+        private readonly CultureInfo _defaultLanguage;
 
         public TemplatesManager(ITemplatesRepository templatesRepository)
         {
             _templatesRepository = templatesRepository;
+            _defaultLanguage = CultureInfo.GetCultures(CultureTypes.AllCultures).FirstOrDefault(c => c.EnglishName == "English");
         }
 
         public async Task<ITemplate> GetByName(string name, CultureInfo language = null)
         {
-            if (string.IsNullOrEmpty(name))
+            try
             {
-                var errorMessage = "The template name wasn't set";
-                _logger.Error(errorMessage);
-                throw new ArgumentNullException(nameof(name), errorMessage);
-            }
+                if (string.IsNullOrEmpty(name))
+                {
+                    var errorMessage = "The template name wasn't set";
+                    _logger.Error(errorMessage);
+                    throw new ArgumentNullException(nameof(name), errorMessage);
+                }
 
-            var entityQ = _templatesRepository.GetQuerable().Where(x => x.Name == name);
-            if (language != null)
+                var entity = language == null ? await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Name == name && x.Language == _defaultLanguage.Name)
+                    : await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Name == name && x.Language == language.Name);
+
+                return entity != null ? CastToDefaultTemplate(entity) : null;
+            }
+            catch (Exception ex)
             {
-                entityQ = entityQ.Where(x => x.Language == language.Name);
+                var usedLanguage = language ?? _defaultLanguage;
+                _logger.Error(ex, $"Failed to get template with name {name} and language {usedLanguage?.Name}");
+                throw;
             }
-
-            var entity = await entityQ.FirstOrDefaultAsync();
-            return entity != null ? CastToDefaultTemplate(entity) : null;
         }
 
         public async Task Create(ITemplate template)
@@ -53,28 +60,28 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Managers
                     PlainBodyTemplate = template.PlainBodyTemplate,
                     Priority = CastToEmailMessagePriority(template.Priority),
                     Tag = template.Tag,
-                    Language = template.Language.Name,
+                    Language = template.Language?.Name ?? _defaultLanguage.Name,
                     FromAddress = template.FromAddress,
                     CreatedDateTime = DateTime.UtcNow
                 };
 
                 await _templatesRepository.CreateAsync(entity);
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex, "Failed to create template");
                 throw;
             }
         }
 
-        public async Task Update(string name, ITemplate templateUpdates)
+        public async Task Update(string name, CultureInfo language, ITemplate templateUpdates)
         {
             try
             {
-                var template = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Name == name);
+                var template = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Name == name && x.Language == language.Name);
                 if (template == null)
                 {
-                    var erroMessage = $"Failed to update template because wasn't fond template with name {name}";
+                    var erroMessage = $"Failed to update template because wasn't fond template with name {name} and language {language?.Name}";
                     _logger.Error(erroMessage);
                     throw new ArgumentException(erroMessage);
                 }
@@ -83,34 +90,33 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Managers
                 template.PlainBodyTemplate = templateUpdates.PlainBodyTemplate;
                 template.Priority = CastToEmailMessagePriority(templateUpdates.Priority);
                 template.Tag = templateUpdates.Tag;
-                template.Language = templateUpdates.Language.Name;
                 template.FromAddress = templateUpdates.FromAddress;
 
                 await _templatesRepository.UpdateAsync(template);
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
-                _logger.Error(ex, "Failed to update template");
+                _logger.Error(ex, $"Failed to update template with name {name} and language {language?.Name}");
                 throw;
             }
         }
 
-        public async Task Remove(string name)
+        public async Task Remove(string name, CultureInfo language)
         {
             try
             {
-                var template = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Name == name);
+                var template = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Name == name && x.Language == language.Name);
                 if (template == null)
                 {
-                    var erroMessage = $"Failed to delete template because wasn't fond template with name {name}";
+                    var erroMessage = $"Failed to delete template because wasn't fond template with name {name} and language {language?.Name}";
                     _logger.Error(erroMessage);
                     throw new ArgumentException(erroMessage);
                 }
                 await _templatesRepository.RemoveAsync(template);
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
-                _logger.Error(ex, "Failed to delete template");
+                _logger.Error(ex, $"Failed to delete template with name {name} and language {language?.Name}");
                 throw;
             }
         }

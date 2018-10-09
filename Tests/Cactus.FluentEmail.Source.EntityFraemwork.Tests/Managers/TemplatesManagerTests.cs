@@ -23,6 +23,8 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Tests.Managers
             var templatesManager = new TemplatesManager(templatesRepository.Object);
 
             var searchingName = "tests template 1";
+            var searchingLanguage = new CultureInfo("es");
+
             var entities = new List<Template>
             {
                 new Template
@@ -39,13 +41,85 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Tests.Managers
                 },
                 new Template
                 {
-                    Name = "tests template 3",
+                    Name = searchingName,
                     Subject = "tests subject 2",
                     HtmlBodyTemplate = "Hi my friend :)",
                     PlainBodyTemplate = "test plain",
                     Priority = EmailMessagePriority.Low,
                     Tag = "test tag from kirill)",
-                    Language = "fz",
+                    Language = searchingLanguage.Name,
+                    FromAddress = "test2@gmail.com",
+                    CreatedDateTime = DateTime.UtcNow
+                },
+                new Template
+                {
+                    Name = "tests template 2",
+                    Subject = "tests subject 2",
+                    HtmlBodyTemplate = "Hi my friend :)",
+                    PlainBodyTemplate = "test plain",
+                    Priority = EmailMessagePriority.High,
+                    Tag = "test tag)",
+                    Language = "ru",
+                    FromAddress = "test3@gmail.com",
+                    CreatedDateTime = DateTime.UtcNow
+                }
+            };
+
+            //Expect
+            templatesRepository
+                .Setup(x => x.GetQuerable())
+                .Returns(new AsyncEnumerable<Template>(entities));
+
+            //Act
+            var filteredTemplate = await templatesManager.GetByName(searchingName, searchingLanguage);
+
+            //Assert
+            Assert.IsNotNull(filteredTemplate);
+
+            Assert.AreEqual(entities[1].Name, filteredTemplate.Name);
+            Assert.AreEqual(entities[1].Subject, filteredTemplate.Subject);
+            Assert.AreEqual(entities[1].HtmlBodyTemplate, filteredTemplate.HtmlBodyTemplate);
+            Assert.AreEqual(entities[1].PlainBodyTemplate, filteredTemplate.PlainBodyTemplate);
+            Assert.AreEqual(Priority.Low, filteredTemplate.Priority);
+            Assert.AreEqual(entities[1].Tag, filteredTemplate.Tag);
+            Assert.AreEqual(entities[1].Language, filteredTemplate.Language.Name);
+            Assert.AreEqual(entities[1].FromAddress, filteredTemplate.FromAddress);
+
+            //Verify
+            templatesRepository.VerifyAll();
+        }
+
+        [Test]
+        public async Task GetByName_FilterByDefaultLanguage_Success()
+        {
+            //Arrange
+            var templatesRepository = new Mock<ITemplatesRepository>();
+            var templatesManager = new TemplatesManager(templatesRepository.Object);
+
+            var searchingName = "tests template 1";
+            var entities = new List<Template>
+            {
+                new Template
+                {
+                    Name = searchingName,
+                    Subject = "tests subject 1",
+                    HtmlBodyTemplate = "Hi my friend :)",
+                    PlainBodyTemplate = "test plain",
+                    Priority = EmailMessagePriority.Normal,
+                    Tag = "test tag",
+                    Language = "en",
+                    FromAddress = "test1@gmail.com",
+                    CreatedDateTime = DateTime.UtcNow
+                },
+                new Template
+                {
+                    Name = searchingName,
+                    Subject = "tests subject 2",
+                    HtmlBodyTemplate = "Hi my friend :)",
+                    PlainBodyTemplate = "test plain",
+                    Priority = EmailMessagePriority.Low,
+                    Tag = "test tag from kirill)",
+                    Language = "es",
                     FromAddress = "test2@gmail.com",
                     CreatedDateTime = DateTime.UtcNow
                 },
@@ -141,30 +215,31 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Tests.Managers
             var templatesRepository = new Mock<ITemplatesRepository>();
             var templatesManager = new TemplatesManager(templatesRepository.Object);
 
-            var searchingTemplateName = "tests template 1";
+            var searchingName = "tests template 1";
+            var searchingLanguage = new CultureInfo("en");
             var entities = new List<Template>
             {
                 new Template
                 {
-                    Name = searchingTemplateName,
+                    Name = searchingName,
                     Subject = "tests subject 1",
                     HtmlBodyTemplate = "Hi my friend :)",
                     PlainBodyTemplate = "test plain",
                     Priority = EmailMessagePriority.Normal,
                     Tag = "test tag",
-                    Language = "en",
+                    Language = searchingLanguage.Name,
                     FromAddress = "test@gmail.com",
                     CreatedDateTime = DateTime.UtcNow
                 },
                 new Template
                 {
-                    Name = "tests template 2",
+                    Name = searchingName,
                     Subject = "tests subject 2",
                     HtmlBodyTemplate = "Hi my friend :)",
                     PlainBodyTemplate = "test plain",
                     Priority = EmailMessagePriority.Normal,
                     Tag = "test tag",
-                    Language = "ru",
+                    Language = "es",
                     FromAddress = "test1@gmail.com",
                     CreatedDateTime = DateTime.UtcNow
                 }
@@ -197,17 +272,18 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Tests.Managers
                 .Returns(new AsyncEnumerable<Template>(entities));
 
             //Act
-            await templatesManager.Update(searchingTemplateName, templatesUpdates);
+            await templatesManager.Update(searchingName, searchingLanguage, templatesUpdates);
 
             //Assert
             Assert.IsNotNull(actualTemplateUpdates);
-            Assert.AreEqual(searchingTemplateName, actualTemplateUpdates.Name);
+            Assert.AreEqual(searchingName, actualTemplateUpdates.Name);
+            Assert.AreEqual(searchingLanguage.Name, actualTemplateUpdates.Language);
+
             Assert.AreEqual(templatesUpdates.Subject, actualTemplateUpdates.Subject);
             Assert.AreEqual(templatesUpdates.HtmlBodyTemplate, actualTemplateUpdates.HtmlBodyTemplate);
             Assert.AreEqual(templatesUpdates.PlainBodyTemplate, actualTemplateUpdates.PlainBodyTemplate);
             Assert.AreEqual(EmailMessagePriority.Low, actualTemplateUpdates.Priority);
             Assert.AreEqual(templatesUpdates.Tag, actualTemplateUpdates.Tag);
-            Assert.AreEqual(templatesUpdates.Language.Name, actualTemplateUpdates.Language);
             Assert.AreEqual(templatesUpdates.FromAddress, actualTemplateUpdates.FromAddress);
             Assert.AreEqual(entities[0].CreatedDateTime, actualTemplateUpdates.CreatedDateTime);
 
@@ -222,30 +298,31 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Tests.Managers
             var templatesRepository = new Mock<ITemplatesRepository>();
             var templatesManager = new TemplatesManager(templatesRepository.Object);
 
-            var searchingTemplateName = "tests template 2";
+            var searchingName = "tests template 1";
+            var searchingLanguage = new CultureInfo("en");
             var entities = new List<Template>
             {
                 new Template
                 {
-                    Name = "tests template 1",
+                    Name = searchingName,
                     Subject = "tests subject 1",
                     HtmlBodyTemplate = "Hi my friend :)",
                     PlainBodyTemplate = "test plain",
                     Priority = EmailMessagePriority.Normal,
                     Tag = "test tag",
-                    Language = "en",
+                    Language = "es",
                     FromAddress = "test1@gmail.com",
                     CreatedDateTime = DateTime.UtcNow
                 },
                 new Template
                 {
-                    Name = searchingTemplateName,
+                    Name = searchingName,
                     Subject = "tests subject 2",
                     HtmlBodyTemplate = "Hi my friend :)",
                     PlainBodyTemplate = "test plain",
                     Priority = EmailMessagePriority.Normal,
                     Tag = "test tag)",
-                    Language = "en",
+                    Language = searchingLanguage.Name,
                     FromAddress = "test@gmail.com",
                     CreatedDateTime = DateTime.UtcNow
                 }
@@ -266,17 +343,18 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Tests.Managers
                 .Returns(Task.CompletedTask);
 
             //Act
-            await templatesManager.Remove(searchingTemplateName);
+            await templatesManager.Remove(searchingName, searchingLanguage);
 
             //Assert
             Assert.IsNotNull(removedTemplate);
-            Assert.AreEqual(searchingTemplateName, removedTemplate.Name);
+            Assert.AreEqual(searchingName, removedTemplate.Name);
+            Assert.AreEqual(searchingLanguage.Name, removedTemplate.Language);
+
             Assert.AreEqual(entities[1].Subject, removedTemplate.Subject);
             Assert.AreEqual(entities[1].HtmlBodyTemplate, removedTemplate.HtmlBodyTemplate);
             Assert.AreEqual(entities[1].PlainBodyTemplate, removedTemplate.PlainBodyTemplate);
             Assert.AreEqual(entities[1].Priority, removedTemplate.Priority);
             Assert.AreEqual(entities[1].Tag, removedTemplate.Tag);
-            Assert.AreEqual(entities[1].Language, removedTemplate.Language);
             Assert.AreEqual(entities[1].FromAddress, removedTemplate.FromAddress);
             Assert.AreEqual(entities[1].CreatedDateTime, removedTemplate.CreatedDateTime);
 

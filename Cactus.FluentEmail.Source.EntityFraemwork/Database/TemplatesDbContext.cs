@@ -13,39 +13,35 @@ namespace Cactus.FluentEmail.Source.EntityFraemwork.Database
             #region Template
 
             modelBuilder.Entity<Template>()
-                .HasKey(x => x.Name);
+                .HasKey(x => new { x.Name, x.Language });
 
             modelBuilder.Entity<Template>()
-                .Property(x => x.Language)
-                .IsRequired();
+                    .Property(x => x.Priority)
+                    .IsRequired();
 
             modelBuilder.Entity<Template>()
-                .Property(x => x.Priority)
-                .IsRequired();
+                    .Property(x => x.Subject)
+                    .IsRequired(false);
 
             modelBuilder.Entity<Template>()
-                .Property(x => x.Subject)
-                .IsRequired(false);
+                    .Property(x => x.HtmlBodyTemplate)
+                    .IsRequired(false);
 
             modelBuilder.Entity<Template>()
-                .Property(x => x.HtmlBodyTemplate)
-                .IsRequired(false);
+                    .Property(x => x.PlainBodyTemplate)
+                    .IsRequired(false);
 
             modelBuilder.Entity<Template>()
-                .Property(x => x.PlainBodyTemplate)
-                .IsRequired(false);
+                    .Property(x => x.Tag)
+                    .IsRequired(false);
 
             modelBuilder.Entity<Template>()
-                .Property(x => x.Tag)
-                .IsRequired(false);
+                    .Property(x => x.FromAddress)
+                    .IsRequired(false);
 
             modelBuilder.Entity<Template>()
-                .Property(x => x.FromAddress)
-                .IsRequired(false);
-
-            modelBuilder.Entity<Template>()
-                .Property(x => x.CreatedDateTime)
-                .IsRequired();
+                    .Property(x => x.CreatedDateTime)
+                    .IsRequired();
             #endregion
         }
 

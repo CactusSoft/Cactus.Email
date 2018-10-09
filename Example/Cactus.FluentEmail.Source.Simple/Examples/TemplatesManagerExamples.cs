@@ -14,7 +14,7 @@ namespace Cactus.FluentEmail.Source.Simple.Examples
         private static readonly ITemplatesManager TemplatesManager;
 
         private static readonly string TemplateName = "Test template";
-        private static readonly CultureInfo TemplateLanguage = new CultureInfo("en");
+        private static readonly CultureInfo TemplateLanguage = new CultureInfo("fz");
 
         static TemplatesManagerExamples()
         {
@@ -24,10 +24,8 @@ namespace Cactus.FluentEmail.Source.Simple.Examples
 
         public static async Task GetByName()
         {
-            var template = await TemplatesManager.GetByName(TemplateName);
-
-            //you can filter by language
-            template = await TemplatesManager.GetByName(TemplateName, TemplateLanguage);
+            //If to call method without language, will be use a default language(english)
+            var template = await TemplatesManager.GetByName(TemplateName, TemplateLanguage);
         }
 
         public static async Task Create()
@@ -48,18 +46,18 @@ namespace Cactus.FluentEmail.Source.Simple.Examples
         public static async Task Update()
         {
             //at first we need to get template
-            var template = await TemplatesManager.GetByName(TemplateName);
+            var template = await TemplatesManager.GetByName(TemplateName, TemplateLanguage);
 
             //after get we can change
             template.HtmlBodyTemplate = "updated template message";
 
             //to apply changes
-            await TemplatesManager.Update(template.Name, template);
+            await TemplatesManager.Update(template.Name, TemplateLanguage, template);
         }
 
         public static async Task Remove()
         {
-            await TemplatesManager.Remove(TemplateName);
+            await TemplatesManager.Remove(TemplateName, TemplateLanguage);
         }
 
         private static TemplatesDbContext ConfigigureDbContext()

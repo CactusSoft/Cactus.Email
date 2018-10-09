@@ -29,7 +29,7 @@ namespace Cactus.FluentEmail.Source.Simple.Examples
             {
                 Subject = "Send html model",
                 PlainBodyTemplate = "Just text",
-                HtmlBodyTemplate = @"@model FluentEmail.Source.Simple.TemplateModel
+                HtmlBodyTemplate = @"@model Cactus.FluentEmail.Source.Simple.TemplateModel
                                         @using System
                                         @using System.Text;
 
@@ -54,7 +54,7 @@ namespace Cactus.FluentEmail.Source.Simple.Examples
             var template = new DefaultTemplate
             {
                 Subject = "Send plain model",
-                PlainBodyTemplate = @"@model FluentEmail.Source.Simple.TemplateModel
+                PlainBodyTemplate = @"@model Cactus.FluentEmail.Source.Simple.TemplateModel
                                         @using System
                                         @using System.Text;
 
@@ -73,12 +73,12 @@ namespace Cactus.FluentEmail.Source.Simple.Examples
             var template = new DefaultTemplate
             {
                 Subject = "Send html and plain model",
-                PlainBodyTemplate = @"@model FluentEmail.Source.Simple.TemplateModel
+                PlainBodyTemplate = @"@model Cactus.FluentEmail.Source.Simple.TemplateModel
                                         @using System
                                         @using System.Text;
 
                                         Hi @Model.Name",
-                HtmlBodyTemplate = @"@model FluentEmail.Source.Simple.TemplateModel
+                HtmlBodyTemplate = @"@model Cactus.FluentEmail.Source.Simple.TemplateModel
                                         @using System
                                         @using System.Text;
 
